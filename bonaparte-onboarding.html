@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Onboarding Bonaparte — agência de inovação. Collective Thinking, since 2011.">
+<meta name="theme-color" content="#0E0E0E">
+<title>Bonaparte · Onboarding</title>
+<!--
+  IMAGENS: placeholders minimalistas estilo Nothing (inspiração visual).
+  IMPORTANTE: Substituir pelas imagens próprias da Bonaparte após aprovação do design.
+
+  Como trocar:
+  1. Encontre os atributos data-img="photo-XXXXX" no HTML
+  2. Substitua "photo-XXXXX" pelo ID/URL da sua imagem
+  3. Ou use URLs diretas: data-img="https://...sua-imagem.jpg"
+
+  Se uma URL falhar, o bloco degrada para um painel escuro limpo (não quebra o layout).
+
+  FONTE: Helvetica (nativa) — em Windows cai para Arial, equivalente da Helvetica.
+-->
+<style>
+:root{
+  --bg:#0E0E0E;
+  --bg-2:#161616;
+  --ink:#F9F9F9;        /* Doctor — única cor de texto/linha nos slides escuros */
+  --muted:rgba(249,249,249,.56);   /* mesma cor, menor opacidade (hierarquia) */
+  --line:rgba(249,249,249,.15);    /* linhas = mesma cor do texto, bem sutil */
+  --coral:#F46E53;      /* Royal Blush — reservado p/ fundo, se quiser */
+  --lime:#E6FFA4;       /* Hitchcock Milk */
+  --violet:#9989D1;     /* Adora */
+  --dark:#282828;       /* Dire Wolf — fallback de imagem */
+  --acc:var(--ink);     /* sem acento colorido: acento = cor do texto */
+  --sans:"Helvetica Neue", Helvetica, Arial, "Segoe UI", sans-serif;
+  --acc-live:var(--ink);
+  --ink-live:var(--ink);--muted-live:var(--muted);--line-live:var(--line);--bg-live:var(--bg);--bg-2-live:var(--bg-2);
+  --pad:clamp(26px,4.4vw,80px);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow-x:hidden}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  overflow-y:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:60;
+  background:radial-gradient(125% 125% at 50% 0%,transparent 58%,rgba(0,0,0,.5) 100%);
+}
+body::after{
+  content:"";position:fixed;inset:-50%;pointer-events:none;z-index:61;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- DECK ---------- */
+.deck{height:100vh;width:100%;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.deck::-webkit-scrollbar{display:none}
+.slide{
+  position:relative;height:100vh;width:100%;
+  scroll-snap-align:start;scroll-snap-stop:always;
+  padding:var(--pad) var(--pad) max(var(--pad),74px);display:flex;flex-direction:column;justify-content:center;overflow:hidden;
+}
+.slide > *{position:relative;z-index:2}
+
+/* corner chrome */
+.tag{
+  position:absolute;top:var(--pad);left:var(--pad);z-index:5;
+  font-weight:500;font-size:.6875rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:12px;
+}
+.tag .dotmark{width:7px;height:7px;background:var(--acc);border-radius:50%}
+.tag b{color:var(--ink);font-weight:500}
+.idx{display:none}
+
+/* ---------- TYPE ---------- */
+.kicker{font-weight:500;font-size:clamp(.6875rem,1vw,.8125rem);letter-spacing:.28em;text-transform:uppercase;color:var(--acc);margin-bottom:22px}
+h1{font-weight:500;font-size:clamp(44px,8vw,128px);line-height:.9;letter-spacing:-.035em;text-transform:uppercase}
+h2{font-weight:500;font-size:clamp(30px,5vw,76px);line-height:.94;letter-spacing:-.03em;text-transform:uppercase}
+.lede{font-size:clamp(.9375rem,1.45vw,1.3125rem);line-height:1.5;max-width:46ch;font-weight:400}
+.sub{font-size:clamp(.8125rem,1.05vw,.9375rem);line-height:1.6;max-width:52ch;color:var(--muted);font-weight:400}
+.eyebrow{font-weight:500;font-size:.6875rem;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.accent{color:var(--acc)}
+h1,h2,h3,h4,.quote{text-wrap:balance}
+p{text-wrap:pretty}
+
+/* ---------- MEDIA (Unsplash placeholders) ---------- */
+.media{background-color:var(--dark);background-position:center;background-size:cover;background-repeat:no-repeat;position:relative;overflow:hidden}
+.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,14,14,.18) 0%,rgba(14,14,14,.62) 100%);transition:.5s var(--ease)}
+.media{filter:grayscale(.22) contrast(1.04) brightness(.92)}
+.media.color{filter:contrast(1.03) brightness(.97) saturate(1.06)}
+.media .cap{position:absolute;left:14px;bottom:12px;z-index:3;font-size:.625rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(249,249,249,.72);font-weight:500}
+/* vídeo de fundo (capa, encerramento, cultura, IA) — herda o filtro/grade do container */
+.bgvid,.shadergrad{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;border:none;display:block}
+
+/* ---------- COVER (S1) ---------- */
+.cover{justify-content:flex-end}
+.cover .hero{position:absolute;inset:0;z-index:0;background-color:#1a1a1a;background-position:center;background-size:cover;filter:brightness(.94) contrast(1.03) saturate(1.06)}
+.cover .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,14,14,.08) 0%,rgba(14,14,14,0) 45%,rgba(14,14,14,.32) 100%)}
+.cover .topbar{position:absolute;top:var(--pad);left:var(--pad);right:var(--pad);z-index:3;display:flex;justify-content:space-between;align-items:flex-start}
+.cover h1{font-size:clamp(44px,11.8vw,186px);line-height:.84;max-width:100%}
+.cover .meta-row{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(249,249,249,.22);padding-top:20px;margin-top:26px;flex-wrap:wrap;gap:16px}
+.cover .tagline{font-weight:500;font-size:clamp(12px,1.2vw,16px);letter-spacing:.28em;text-transform:uppercase;color:var(--acc)}
+.cover .sublabel{font-weight:500;font-size:.75rem;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+
+/* ---------- WELCOME (S2) ---------- */
+.split{display:grid;grid-template-columns:1.04fr .96fr;gap:clamp(28px,4vw,66px);align-items:center;height:100%}
+.split .col{display:flex;flex-direction:column;justify-content:center}
+.split .col > * + *{margin-top:20px}
+.split .figure{height:min(72vh,560px);border:1px solid var(--line)}
+.pillars{display:flex;margin-top:42px;border-top:1px solid var(--line)}
+.pillar{flex:1;padding:22px 0 0}
+.pillar + .pillar{border-left:1px solid var(--line);padding-left:24px}
+.pillar .n{font-size:.6875rem;color:var(--acc);letter-spacing:.18em;margin-bottom:9px;font-weight:500}
+.pillar h3{font-weight:500;font-size:clamp(15px,1.5vw,21px);text-transform:uppercase;letter-spacing:.01em}
+
+/* ---------- 3 COLS (S3) ---------- */
+.cols-3{display:grid;grid-template-columns:repeat(3,1fr);margin-top:44px;border-top:1px solid var(--line)}
+.colcard{padding:28px 26px 0 0;border-right:1px solid var(--line)}
+.colcard:last-child{border-right:none;padding-right:0}
+.colcard:not(:first-child){padding-left:26px}
+.colcard .meta{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.colcard .num{font-weight:500;font-size:clamp(26px,2.8vw,42px);color:var(--acc);line-height:1}
+.colcard .role{font-size:.625rem;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;font-weight:500}
+.colcard h3{font-weight:500;font-size:clamp(20px,2.2vw,32px);text-transform:uppercase;letter-spacing:-.01em;margin-bottom:13px}
+.colcard p{font-size:.84375rem;line-height:1.55;color:var(--muted);max-width:32ch}
+
+/* ---------- PHILOSOPHY (S4) ---------- */
+.phil{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(28px,4vw,60px);align-items:center;height:100%}
+.phil .left{display:flex;flex-direction:column;justify-content:center}
+.phil .figure{height:min(64vh,500px);border:1px solid var(--line);margin-bottom:22px}
+.quote{font-weight:500;font-size:clamp(21px,2.7vw,40px);line-height:1.12;letter-spacing:-.015em;margin:6px 0 12px}
+.cite{font-size:.6875rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;font-weight:500}
+.flow{display:flex;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap}
+.flow span{font-weight:500;font-size:clamp(13px,1.3vw,18px);text-transform:uppercase;letter-spacing:.03em}
+.flow i{color:var(--acc);font-style:normal;font-size:1.0625rem}
+.principles{border-top:1px solid var(--line)}
+.principle{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+.principle .plus{color:var(--acc);font-weight:500;font-size:1.0625rem;flex-shrink:0;line-height:1.2}
+.principle h4{font-weight:500;font-size:clamp(12px,1.15vw,16px);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.principle p{font-size:.78125rem;color:var(--muted);line-height:1.5}
+
+/* ---------- CULTURE (S5) ---------- */
+.bgfig{position:absolute;inset:0;z-index:0;background-color:#161616;background-position:center;background-size:cover;filter:brightness(.72) contrast(1.03) saturate(1.06)}
+.bgfig::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,14,14,.66) 30%,rgba(14,14,14,.3) 100%)}
+.ticker-row{display:flex;flex-wrap:wrap;gap:9px 12px;margin:26px 0 8px}
+.chip{font-weight:500;font-size:clamp(.6875rem,1.1vw,.875rem);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:40px;padding:8px 17px}
+.chip.hot{color:var(--acc);border-color:var(--acc)}
+.expect{display:grid;grid-template-columns:repeat(4,1fr);margin-top:38px;border-top:1px solid var(--line)}
+.expect .it{padding:24px 22px 0 0;border-right:1px solid var(--line)}
+.expect .it:last-child{border-right:none}
+.expect .it:not(:first-child){padding-left:22px}
+.expect h4{font-weight:500;font-size:clamp(15px,1.6vw,21px);text-transform:uppercase;margin-bottom:9px}
+.expect p{font-size:.78125rem;color:var(--muted);line-height:1.5}
+
+/* ---------- PROCESS (S6) ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);margin-top:42px;border-top:1px solid var(--line)}
+.step{padding:26px 24px 0 0;border-right:1px solid var(--line)}
+.step:last-child{border-right:none}
+.step:not(:first-child){padding-left:24px}
+.step .sid{font-weight:500;font-size:.625rem;letter-spacing:.24em;color:var(--muted);margin-bottom:18px}
+.step .figure{height:118px;margin-bottom:16px;border:1px solid var(--line)}
+.step h3{font-weight:500;font-size:clamp(18px,2vw,28px);text-transform:uppercase;margin-bottom:10px}
+.step p{font-size:.78125rem;color:var(--muted);line-height:1.5}
+
+/* ---------- TOOLS (S7) ---------- */
+.tools-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,3.4vw,58px);align-items:center;height:100%}
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:clamp(22px,3.2vh,36px)}
+.tool{background:var(--bg);padding:clamp(20px,2vw,28px) clamp(16px,1.6vw,22px);transition:.4s var(--ease)}
+.tools-foot{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(28px,4vw,60px);align-items:center;margin-top:clamp(26px,4.5vh,52px);padding-top:clamp(22px,3.5vh,38px)}
+.tool:hover{background:var(--bg-2)}
+.tool h4{font-weight:500;font-size:clamp(15px,1.6vw,21px);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+.tool h4::before{content:"";width:7px;height:7px;background:var(--acc);border-radius:50%}
+.tool p{font-size:.75rem;color:var(--muted);line-height:1.5}
+.practices .pquote{font-weight:500;font-size:clamp(17px,1.9vw,26px);line-height:1.24;margin-bottom:24px;letter-spacing:-.01em}
+.plist{border-top:1px solid var(--line)}
+.pli{padding:14px 0;border-bottom:1px solid var(--line)}
+.pli h5{font-weight:500;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+.pli p{font-size:.75rem;color:var(--muted);line-height:1.45}
+
+/* ---------- OPERATION (S8) ---------- */
+.op-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,3.4vw,58px);align-items:center;height:100%}
+.op-head{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,4vw,64px);align-items:center}
+.op-note{position:relative;padding-top:20px}
+.op-note::before{content:"";position:absolute;top:0;left:0;width:44px;height:2px;background:var(--acc)}
+.op-note p{font-size:clamp(14px,1.4vw,18px);line-height:1.45}
+.op-note p + p{margin-top:12px;font-size:.8125rem;color:var(--muted)}
+.reqs{display:grid;grid-template-columns:repeat(4,1fr);margin-top:18px;border-top:1px solid var(--line)}
+.req{padding:22px 20px 0 0;border-right:1px solid var(--line)}
+.req:last-child{border-right:none}
+.req:not(:first-child){padding-left:20px}
+.req .num{font-weight:500;font-size:.8125rem;color:var(--acc);letter-spacing:.08em;margin-bottom:8px}
+.req h4{font-weight:500;font-size:clamp(13px,1.3vw,17px);text-transform:uppercase;margin-bottom:6px}
+.req p{font-size:.75rem;color:var(--muted);line-height:1.45}
+
+/* ---------- CLIENTS (S9) ---------- */
+.clients-head{max-width:60ch;margin-bottom:32px}
+.client-grid{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.client{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 12px;display:flex;align-items:center;justify-content:center;min-height:clamp(80px,10.6vh,108px);font-weight:500;font-size:clamp(12px,1.1vw,16px);letter-spacing:.03em;text-transform:uppercase;color:var(--muted);transition:.35s var(--ease);text-align:center}
+.client:hover{color:var(--ink);background:var(--bg-2)}
+/* logo monocromático: brightness(0) invert(1) = silhueta branca (slide 9 é escuro).
+   Se um dia o slide 9 virar claro, troque por filter:brightness(0) p/ silhueta preta. */
+.client-logo{display:none;max-height:60px;max-width:82%;object-fit:contain;filter:brightness(0) invert(1);opacity:.85;transition:opacity .7s var(--ease)}
+.client.has-logo .client-name{display:none}
+.client.has-logo .client-logo{display:block}
+.client:hover .client-logo{opacity:1}
+
+/* ---------- AI (S10) ---------- */
+.ai-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,3.4vw,58px);align-items:center;height:100%}
+.ai-layout .figure{height:min(66vh,520px);border:1px solid var(--line)}
+.ai-two{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(28px,3.4vw,58px);margin-top:clamp(26px,4vh,44px)}
+.ai-note{margin-top:20px;padding:18px 20px;border:1px solid var(--line);background:var(--bg-2)}
+.ai-note p{font-size:.84375rem;line-height:1.55}
+.ai-note .hl{color:var(--acc);font-weight:500;display:block;margin-top:9px;font-size:.78125rem}
+.speed h4{font-weight:500;font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.speed > p{font-size:clamp(14px,1.45vw,19px);line-height:1.45;margin-bottom:clamp(16px,2.2vh,24px)}
+.tension{display:flex;border:1px solid var(--line)}
+.tension .side{flex:1;padding:24px 22px;text-align:center}
+.tension .side span{font-size:.6875rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px;font-weight:500}
+.tension .side h5{font-weight:500;font-size:clamp(15px,1.7vw,23px);text-transform:uppercase;line-height:1.05}
+.tension .mid{display:flex;align-items:center;justify-content:center;padding:0 6px;color:var(--acc);font-size:1.3125rem;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.tension .side:last-of-type h5{color:var(--acc)}
+
+/* ---------- FOUNDATION (S11) ---------- */
+.cores{display:grid;grid-template-columns:repeat(5,1fr);margin-top:44px;border-top:1px solid var(--line)}
+.core{padding:28px 18px 0 0;border-right:1px solid var(--line)}
+.core:last-child{border-right:none}
+.core:not(:first-child){padding-left:18px}
+.core .lab{font-weight:500;font-size:.625rem;letter-spacing:.22em;color:var(--acc);margin-bottom:26px}
+.core h3{font-weight:500;font-size:clamp(14px,1.5vw,20px);text-transform:uppercase;margin-bottom:11px;letter-spacing:-.01em}
+.core p{font-size:.75rem;color:var(--muted);line-height:1.5}
+
+/* ---------- CLOSING (S12) ---------- */
+.closing{justify-content:flex-end}
+.closing .hero{position:absolute;inset:0;z-index:0;background-color:#1a1a1a;background-position:center;background-size:cover;filter:brightness(.9) contrast(1.03) saturate(1.06)}
+.closing .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,14,14,.12) 0%,rgba(14,14,14,.06) 40%,rgba(14,14,14,.42) 100%)}
+.closing h1{font-size:clamp(52px,11vw,168px);margin-bottom:18px}
+.closing .intro{font-weight:500;font-size:clamp(12px,1.1vw,15px);letter-spacing:.16em;line-height:1.5;text-transform:uppercase;color:var(--muted);max-width:48ch;margin-bottom:34px}
+.unite{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(249,249,249,.22)}
+.unite .u{padding:24px 26px 0 0;border-right:1px solid rgba(249,249,249,.18)}
+.unite .u:last-child{border-right:none}
+.unite .u:not(:first-child){padding-left:26px}
+.unite .u .ico{font-size:1.1875rem;margin-bottom:12px;color:var(--acc)}
+.unite .u h3{font-weight:500;font-size:clamp(17px,1.8vw,25px);text-transform:uppercase;margin-bottom:9px}
+.unite .u p{font-size:.78125rem;color:var(--muted);line-height:1.5}
+.close-foot{margin-top:28px;z-index:3;border-top:1px solid rgba(249,249,249,.22);padding-top:16px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.close-foot .ticker{overflow:hidden;flex:1;white-space:nowrap;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.close-foot .ticker span{display:inline-block;font-weight:500;font-size:.6875rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);animation:marquee 28s linear infinite}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.close-foot .sig{font-weight:500;font-size:.8125rem;letter-spacing:.2em;color:var(--ink)}
+
+/* ---------- NAV CHROME ---------- */
+.dots{display:none}
+.dots button{width:24px;height:24px;border:none;background:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+.dots button::before{content:"";width:9px;height:9px;border-radius:50%;border:1px solid var(--muted-live);background:transparent;transition:.3s var(--ease)}
+.dots button:hover::before{border-color:var(--ink-live)}
+.dots button.on::before{background:var(--acc-live);border-color:var(--acc-live);transform:scale(1.25)}
+.dots button:focus-visible,.arrows button:focus-visible{outline:2px solid var(--acc-live);outline-offset:2px}
+.counter{position:fixed;left:max(22px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));z-index:50;font-weight:500;font-size:.75rem;letter-spacing:.14em;color:var(--muted-live);display:flex;align-items:center;gap:10px}
+.counter .cur{color:var(--ink-live);font-weight:500;font-size:.9375rem}
+.counter .track{width:78px;height:2px;background:var(--line-live);position:relative;overflow:hidden}
+.counter .track i{position:absolute;left:0;top:0;bottom:0;background:var(--acc-live);transition:width .5s var(--ease)}
+.arrows{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:50;display:flex;gap:8px}
+.arrows button{width:44px;height:44px;border:1px solid var(--line-live);background:var(--bg-2-live);color:var(--ink-live);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.3s var(--ease)}
+.arrows button:hover{background:var(--acc-live);border-color:var(--acc-live);color:var(--bg-live)}
+.arrows button:disabled{opacity:.3;cursor:default}
+.arrows button:disabled:hover{background:var(--bg-2-live);border-color:var(--line-live);color:var(--ink-live)}
+.hint{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:50;font-weight:500;font-size:.625rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-live);opacity:.7;transition:opacity .5s}
+.hint.hide{opacity:0}
+
+/* ---------- MENU BUTTON + INDEX ---------- */
+.menu-btn{position:fixed;top:max(18px,env(safe-area-inset-top));right:max(20px,env(safe-area-inset-right));z-index:55;
+  display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;padding:8px 4px;
+  font-family:var(--sans);font-weight:500;font-size:.6875rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-live);transition:color .4s var(--ease)}
+.menu-btn .menu-ico{display:flex;flex-direction:column;gap:3.5px;width:19px}
+.menu-btn .menu-ico i{height:1.5px;width:100%;background:currentColor;transition:.35s var(--ease)}
+.menu-btn:hover .menu-ico i:nth-child(1){transform:translateY(1.5px)}
+.menu-btn:hover .menu-ico i:nth-child(3){transform:translateY(-1.5px)}
+.menu-btn:focus-visible{outline:2px solid var(--acc-live);outline-offset:4px}
+
+.index-overlay{position:fixed;inset:0;z-index:80;background:#0B0B0B;color:#F9F9F9;
+  padding:clamp(34px,6vw,96px) clamp(28px,7vw,120px);display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s}
+.index-overlay.open{opacity:1;visibility:visible}
+.index-overlay::after{content:"";position:absolute;inset:-50%;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.index-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;position:relative;z-index:1;
+  border-bottom:1px solid rgba(249,249,249,.18);padding-bottom:18px;margin-bottom:clamp(14px,2.4vw,40px)}
+.index-title{font-weight:500;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(249,249,249,.55)}
+.index-close{background:none;border:none;cursor:pointer;color:#F9F9F9;font-family:var(--sans);font-weight:500;
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.index-close:focus-visible{outline:2px solid #F9F9F9;outline-offset:3px}
+.index-list{display:flex;flex-direction:column;overflow-y:auto;position:relative;z-index:1;scrollbar-width:none}
+.index-list::-webkit-scrollbar{display:none}
+.index-item{display:flex;align-items:baseline;gap:clamp(14px,2vw,34px);background:none;border:none;cursor:pointer;text-align:left;width:100%;
+  padding:clamp(7px,1vw,14px) 0;border-bottom:1px solid rgba(249,249,249,.1);color:rgba(249,249,249,.55);
+  font-family:var(--sans);transition:color .3s var(--ease),padding-left .3s var(--ease)}
+.index-item .ii-num{font-size:.7rem;letter-spacing:.1em;min-width:2.6ch;opacity:.7}
+.index-item .ii-title{font-weight:500;font-size:clamp(1.05rem,2.5vw,1.9rem);letter-spacing:-.015em;text-transform:uppercase;line-height:1.04}
+.index-item:hover{color:#F9F9F9;padding-left:12px}
+.index-item.cur{color:#F9F9F9}
+.index-item.cur .ii-num::after{content:" ●";font-size:.5rem;vertical-align:middle}
+.index-item:focus-visible{outline:2px solid #F9F9F9;outline-offset:-2px}
+@media (prefers-reduced-motion:reduce){.index-overlay{transition:none}.menu-btn .menu-ico i{transition:none}}
+
+/* ---------- LIQUID GLASS (iOS 26) ---------- */
+.menu-btn{padding:10px 17px;border-radius:30px}
+.counter{padding:9px 15px;border-radius:30px}
+.arrows button{border-radius:14px;border:none;position:relative}
+.menu-btn,.counter,.arrows button{overflow:hidden;background:rgba(150,150,150,.10);
+  -webkit-backdrop-filter:blur(22px) saturate(2) brightness(1.12);backdrop-filter:blur(22px) saturate(2) brightness(1.12);
+  box-shadow:inset 0 1px 1.5px rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.14),inset 0 -2px 4px rgba(0,0,0,.16),0 10px 30px rgba(0,0,0,.24)}
+/* brilho especular (sheen) que dá o aspecto "líquido" */
+.menu-btn::after,.counter::after,.arrows button::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.1) 28%,transparent 52%);
+  mix-blend-mode:screen;opacity:.6}
+.index-overlay{background:rgba(10,10,10,.42);
+  -webkit-backdrop-filter:blur(46px) saturate(1.9) brightness(1.05);backdrop-filter:blur(46px) saturate(1.9) brightness(1.05)}
+.index-overlay::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(130% 80% at 12% -10%,rgba(255,255,255,.07),transparent 55%)}
+/* refração de borda (lente líquida) — onde o navegador suporta filtro SVG no backdrop */
+@supports (backdrop-filter:url(#liquidLens)) or (-webkit-backdrop-filter:url(#liquidLens)){
+  .menu-btn,.counter,.arrows button{
+    -webkit-backdrop-filter:blur(14px) saturate(2) brightness(1.12) url(#liquidLens);
+    backdrop-filter:blur(14px) saturate(2) brightness(1.12) url(#liquidLens)}
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .index-overlay{background:#0B0B0B}
+  .menu-btn,.counter,.arrows button{background:rgba(40,40,40,.72)}
+}
+
+/* ---------- ANIMATIONS ---------- */
+.anim{opacity:0;transform:translateY(24px);filter:blur(2px)}
+.slide.active .anim{animation:fadeUp .82s var(--ease) forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.slide.active .d1{animation-delay:.05s}.slide.active .d2{animation-delay:.14s}
+.slide.active .d3{animation-delay:.23s}.slide.active .d4{animation-delay:.32s}
+.slide.active .d5{animation-delay:.41s}.slide.active .d6{animation-delay:.5s}
+.slide.active .d7{animation-delay:.59s}.slide.active .d8{animation-delay:.68s}
+@media (prefers-reduced-motion:reduce){
+  .anim{opacity:1;transform:none;filter:none}
+  .deck{scroll-behavior:auto}
+  .close-foot .ticker span{animation:none}
+  .slide.active .media.figure{animation:none;clip-path:none}
+}
+.reveal-all .anim{opacity:1!important;transform:none!important;filter:none!important;animation:none!important}
+.reveal-all .media.figure{animation:none!important;clip-path:none!important}
+
+/* ---------- LIGHT / COLORED SLIDE VARIANTS ---------- */
+.slide.s-light{--bg:#F4F1EA;--bg-2:#E9E5DD;--ink:#141414;--muted:rgba(20,20,20,.56);--line:rgba(20,20,20,.14);--acc:var(--ink);background:var(--bg);color:var(--ink)}
+.slide.s-coral{--bg:#F46E53;--bg-2:rgba(20,12,6,.08);--ink:#1A1208;--muted:rgba(26,18,8,.82);--line:rgba(26,18,8,.24);--acc:#1A1208;background:var(--bg);color:var(--ink)}
+.slide.s-lime{--bg:#E6FFA4;--bg-2:rgba(20,24,8,.07);--ink:#1A1F0A;--muted:rgba(26,31,10,.74);--line:rgba(26,31,10,.2);--acc:#1A1F0A;background:var(--bg);color:var(--ink)}
+
+/* ---------- EXTRA MOTION ---------- */
+/* image curtain reveal */
+.media.figure{border-radius:clamp(12px,1.1vw,18px);overflow:hidden}
+.slide.active .media.figure{animation:imgWipe .8s var(--ease) both}
+@keyframes imgWipe{from{opacity:0}to{opacity:1}}
+.media.figure{transition:filter .5s var(--ease)}
+.media.figure:hover{filter:grayscale(.02) contrast(1.06) brightness(1.04)}
+.media.figure:hover::after{opacity:.78}
+/* accent dot pulse */
+.tag .dotmark{animation:pulse 3s var(--ease) infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.55}}
+/* hover lifts */
+.chip{transition:.4s var(--ease)}
+.chip:hover{color:var(--ink);border-color:var(--ink);transform:translateY(-2px)}
+.req{transition:background .4s var(--ease)}
+.req:hover{background:var(--bg-2)}
+.client{transition:.35s var(--ease)}
+.client:hover{transform:scale(1.04);z-index:3}
+.flow i{animation:nudge 2.4s var(--ease) infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+/* Nothing-style dot-matrix texture (homage) */
+.dotgrid{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.07;
+  background-image:radial-gradient(currentColor 1px,transparent 1.5px);background-size:22px 22px}
+@media (prefers-reduced-motion:reduce){.tag .dotmark,.flow i{animation:none}}
+.reveal-all .media.figure,.reveal-all .tag .dotmark,.reveal-all .flow i{animation:none!important}
+
+/* ---------- MIX-BLEND-MODE: DIFFERENCE (fontes) ----------
+   Texto forçado a branco + difference → inverte sozinho: branco sobre fundo escuro,
+   escuro sobre fundo claro, e inverte dinamicamente sobre as imagens.
+   Contido ao texto de conteúdo; chrome e linhas seguem o sistema de tokens. */
+.slide:not(.s-light) h1,.slide:not(.s-light) h2,.slide:not(.s-light) h3,.slide:not(.s-light) h4,.slide:not(.s-light) h5,
+.slide:not(.s-light) .kicker,.slide:not(.s-light) .tagline,.slide:not(.s-light) .num,.slide:not(.s-light) .quote,.slide:not(.s-light) .flow,.slide:not(.s-light) .sig,
+.slide:not(.s-light) .intro,.slide:not(.s-light) .pquote,.slide:not(.s-light) .client-name,.slide:not(.s-light) .tag,.slide:not(.s-light) .hl{
+  mix-blend-mode:difference;color:#F9F9F9}
+.slide:not(.s-light) p,.slide:not(.s-light) .sub,.slide:not(.s-light) .cite,.slide:not(.s-light) .role,.slide:not(.s-light) .sid,.slide:not(.s-light) .lab,
+.slide:not(.s-light) .eyebrow,.slide:not(.s-light) .sublabel,.slide:not(.s-light) .cap,.slide:not(.s-light) .chip,.close-foot .ticker span{
+  mix-blend-mode:difference;color:rgba(249,249,249,.62)}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1080px){
+  /* stacked content can exceed 100vh here — let each slide scroll internally instead of clipping */
+  .slide{justify-content:flex-start;padding-top:calc(var(--pad) + 44px);overflow-y:auto}
+  .deck{scroll-snap-type:y proximity}
+  .split,.phil,.tools-layout,.op-layout,.ai-layout,.ai-two,.tools-foot,.op-head{grid-template-columns:1fr;gap:28px;height:auto}
+  .split .figure,.phil .figure,.ai-layout .figure{height:34vh;min-height:200px}
+  .cols-3,.expect,.steps,.cores,.unite{grid-template-columns:1fr 1fr}
+  .colcard,.expect .it,.step,.core,.unite .u,.req{border-right:none;border-bottom:1px solid var(--line);padding:22px 0}
+  .colcard:not(:first-child),.expect .it:not(:first-child),.step:not(:first-child),.core:not(:first-child),.unite .u:not(:first-child),.req:not(:first-child){padding-left:0}
+  .client-grid{grid-template-columns:repeat(3,1fr)}
+  .reqs,.tools-grid{grid-template-columns:1fr 1fr}
+  .step .figure{display:none}
+}
+@media (max-width:680px){
+  :root{--pad:20px}
+  .slide{justify-content:flex-start;padding-top:84px;overflow-y:auto}
+  .deck{scroll-snap-type:none}
+  .cols-3,.expect,.steps,.cores,.unite,.reqs,.tools-grid,.client-grid,.pillars{grid-template-columns:1fr;display:grid}
+  .pillar + .pillar{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:16px;margin-top:16px}
+  .client-grid{grid-template-columns:repeat(2,1fr)}
+  .tension{flex-direction:column}
+  .dots{display:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none">
+  <filter id="liquidLens" x="-30%" y="-30%" width="160%" height="160%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.013 0.013" numOctaves="2" seed="7" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="1.4" result="nb"/>
+    <feDisplacementMap in="SourceGraphic" in2="nb" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<main class="deck" id="deck">
+
+  <!-- S1 COVER -->
+  <section class="slide cover active" aria-label="Slide 1 de 12 — Capa, Bonaparte">
+    <div class="hero"><canvas class="shadergrad" data-cols="0.96,0.43,0.32|0.10,0.15,0.50|0.28,0.22,0.54"></canvas></div>
+    <div class="dotgrid"></div>
+    <div class="topbar">
+      <div class="kicker anim d1" style="margin:0">Onboarding</div>
+      <span class="idx anim d1" style="position:static">001 / 012</span>
+    </div>
+    <h1 class="anim d2">Bonaparte</h1>
+    <div class="meta-row anim d4">
+      <div>
+        <div class="tagline" lang="en">Collective Thinking</div>
+        <div class="sublabel" style="margin-top:8px">Innovation Agency · Since 2011</div>
+      </div>
+      <div class="sublabel">Bonaparte.ag</div>
+    </div>
+  </section>
+
+  <!-- S2 BEM-VINDO -->
+  <section class="slide s-light" aria-label="Slide 2 de 12 — Bem-vindo à Bonaparte">
+    <div class="tag anim d1"><span class="dotmark"></span>S 002 · <b>Apresentação</b></div>
+    <span class="idx anim d1">002 / 012</span>
+    <div class="split">
+      <div class="col">
+        <h2 class="anim d2">Bem-vindo<br>a Bonaparte</h2>
+        <p class="lede anim d3" style="margin-top:24px">Somos uma agência de inovação construída através de colaboração, criatividade e tecnologia para impulsionar empresas audaciosas.</p>
+        <p class="sub anim d4">Desde 2011, transformamos desafios complexos em soluções estratégicas. Nosso modelo de squads multidisciplinares une execução, pensamento estratégico e impacto real.</p>
+        <div class="anim d5">
+          <div class="eyebrow" style="margin-top:8px">Nossos Pilares</div>
+          <div class="pillars">
+            <div class="pillar"><div class="n">01</div><h3>Colaboração</h3></div>
+            <div class="pillar"><div class="n">02</div><h3>Criatividade</h3></div>
+            <div class="pillar"><div class="n">03</div><h3>Tecnologia</h3></div>
+          </div>
+        </div>
+      </div>
+      <div class="col anim d3">
+        <div class="media figure color" style="background-image:url('media/sil-welcome.jpg')"><span class="cap">Colaboração · Squads</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 COMO FUNCIONAMOS -->
+  <section class="slide" aria-label="Slide 3 de 12 — Como funcionamos">
+    <div class="tag anim d1"><span class="dotmark"></span>S 003 · <b>Estrutura</b></div>
+    <span class="idx anim d1">003 / 012</span>
+    <h2 class="anim d2">Como <span class="accent">Funcionamos</span></h2>
+    <div class="cols-3">
+      <div class="colcard anim d3">
+        <div class="meta"><span class="num">01</span><span class="role">Estratégia</span></div>
+        <h3>Board</h3>
+        <p>Visão estratégica, crescimento e relacionamento macro com clientes. Define os passos que habilitam a execução da missão com excelência.</p>
+      </div>
+      <div class="colcard anim d4">
+        <div class="meta"><span class="num">02</span><span class="role">Suporte</span></div>
+        <h3>Community</h3>
+        <p>Define o ritmo da Bonaparte. Atua em Pessoas e Cultura, Operações e Novos Negócios. Apoia e destrava os squads.</p>
+      </div>
+      <div class="colcard anim d5">
+        <div class="meta"><span class="num">03</span><span class="role">Execução</span></div>
+        <h3>Squads</h3>
+        <p>Times únicos. Capacidade técnica e diversidade calibradas para cada desafio. Autonomia dentro do propósito da conexão com o cliente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 COLLECTIVE THINKING -->
+  <section class="slide s-light" aria-label="Slide 4 de 12 — Collective Thinking, filosofia">
+    <div class="tag anim d1"><span class="dotmark"></span>S 004 · <b>Filosofia</b></div>
+    <span class="idx anim d1">004 / 012</span>
+    <div class="phil">
+      <div class="left">
+        <div class="media figure color" style="background-image:url('media/sil-philo.jpg')"><span class="cap">Inteligência Coletiva</span></div>
+        <div class="flow anim d4"><span>Board</span><i>›</i><span>Community</span><i>›</i><span>Squads</span></div>
+      </div>
+      <div>
+        <div class="kicker anim d2" lang="en">Collective Thinking</div>
+        <p class="quote anim d2" lang="en">“Innovation is <span class="accent">a team sport</span>.”</p>
+        <p class="cite anim d3">Collective Genius · Linda Hill · Harvard Business School</p>
+        <div class="principles" style="margin-top:24px">
+          <div class="principle anim d5"><span class="plus">+</span><div><h4>Diversidade de Perspectivas</h4><p>Times com repertórios distintos chegam mais longe.</p></div></div>
+          <div class="principle anim d6"><span class="plus">+</span><div><h4>Colaboração acima da Hierarquia</h4><p>A melhor ideia vence, não o cargo mais alto.</p></div></div>
+          <div class="principle anim d7"><span class="plus">+</span><div><h4>Experimentação Contínua</h4><p>Erro rápido, aprendizado rápido.</p></div></div>
+          <div class="principle anim d8"><span class="plus">+</span><div><h4>Inteligência Coletiva</h4><p>O grupo é mais capaz do que qualquer indivíduo.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5 NOSSA CULTURA -->
+  <section class="slide" aria-label="Slide 5 de 12 — Nossa cultura">
+    <div class="bgfig"><canvas class="shadergrad" data-cols="0.45,0.78,0.55|0.18,0.42,0.5|0.06,0.09,0.1"></canvas></div>
+    <div class="tag anim d1"><span class="dotmark"></span>S 005 · <b>Cultura e Postura</b></div>
+    <span class="idx anim d1">005 / 012</span>
+    <h2 class="anim d2">Nossa <span class="accent">Cultura</span></h2>
+    <div class="ticker-row anim d3">
+      <span class="chip hot">Autonomia</span><span class="chip">Proatividade</span><span class="chip">Colaboração</span><span class="chip">Flexibilidade</span><span class="chip">Estratégia / Melhoria Contínua</span>
+    </div>
+    <div class="anim d4" style="margin-top:22px"><div class="eyebrow">O que esperamos</div></div>
+    <div class="expect">
+      <div class="it anim d5"><h4>Autonomia</h4><p>Operar e decidir sem depender de aprovação constante.</p></div>
+      <div class="it anim d6"><h4>Visão 360</h4><p>Enxergar o projeto além da sua entrega. Perspectiva sistêmica.</p></div>
+      <div class="it anim d7"><h4>Comunicar Riscos</h4><p>Rapidamente. Não espere o problema virar crise.</p></div>
+      <div class="it anim d8"><h4>Participação Ativa</h4><p>Construção coletiva é expectativa, não diferencial.</p></div>
+    </div>
+  </section>
+
+  <!-- S6 HOW WE WORK -->
+  <section class="slide s-light" aria-label="Slide 6 de 12 — How We Work, processo">
+    <div class="tag anim d1"><span class="dotmark"></span>S 006 · <b>Processo</b></div>
+    <span class="idx anim d1">006 / 012</span>
+    <h2 class="anim d2" lang="en">How We <span class="accent">Work</span></h2>
+    <div class="steps">
+      <div class="step anim d3"><div class="sid">S 001</div><div class="media figure" data-img="photo-1454165804606-c3d57bc86b40"></div><h3>Discovery</h3><p>Mergulhamos no desafio do cliente. Entendimento profundo antes de qualquer movimento.</p></div>
+      <div class="step anim d4"><div class="sid">S 002</div><div class="media figure" data-img="photo-1517245386807-bb43f82c33c4"></div><h3>Search</h3><p>Escaneamos o ecossistema em busca dos profissionais mais aptos. Técnica, cultura e sinergia.</p></div>
+      <div class="step anim d5"><div class="sid">S 003</div><div class="media figure" data-img="photo-1531746790731-6c087fecd65a"></div><h3>Connect</h3><p>Cultivamos a coesão do squad. Alinhamento de metodologia, propósito e contexto.</p></div>
+      <div class="step anim d6"><div class="sid">S 004</div><div class="media figure" data-img="photo-1551434678-e076c223a692"></div><h3>Delivery</h3><p>Squads em ação. Community acompanha de perto, maximizando desempenho e entrega contínua.</p></div>
+    </div>
+  </section>
+
+  <!-- S7 NOSSAS FERRAMENTAS -->
+  <section class="slide" aria-label="Slide 7 de 12 — Nossas ferramentas">
+    <div class="tag anim d1"><span class="dotmark"></span>S 007 · <b>Comunicação</b></div>
+    <span class="idx anim d1">007 / 012</span>
+    <h2 class="anim d2">Nossas <span class="accent">Ferramentas</span></h2>
+    <div class="tools-grid anim d3">
+      <div class="tool"><h4>Monday</h4><p>Gestão de tarefas, acompanhamento operacional e documentação de projetos.</p></div>
+      <div class="tool"><h4>E-mail</h4><p>Formalizações e comunicação oficial com clientes e equipe.</p></div>
+      <div class="tool"><h4>WhatsApp</h4><p>Comunicação ágil, alinhamentos rápidos e suporte do dia a dia.</p></div>
+      <div class="tool"><h4>Google Chat</h4><p>Comunicação interna em canais organizados por projeto e área.</p></div>
+    </div>
+    <div class="tools-foot">
+      <p class="pquote anim d4">“Falar ajuda quem está na sala. <span class="accent">Escrever ajuda todos.</span>”</p>
+      <div class="anim d5"><div class="eyebrow" style="margin-bottom:10px">Boas Práticas</div>
+        <div class="plist">
+          <div class="pli"><h5>Use Canais Oficiais</h5><p>Conversas fora das plataformas geram invisibilidade operacional.</p></div>
+          <div class="pli"><h5>Registre Decisões</h5><p>O que não está documentado não existe para o time.</p></div>
+          <div class="pli"><h5>Compartilhe Bloqueios</h5><p>Não espere o prazo para comunicar um risco.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S8 ORGANIZAÇÃO OPERACIONAL -->
+  <section class="slide s-light" aria-label="Slide 8 de 12 — Organização operacional">
+    <div class="tag anim d1"><span class="dotmark"></span>S 008 · <b>Operação</b></div>
+    <span class="idx anim d1">008 / 012</span>
+    <div class="op-head">
+      <h2 class="anim d2">Organização<br>Operacional</h2>
+      <div class="op-note anim d3">
+        <p>Tudo precisa estar registrado nas plataformas de gestão. A operação depende de visibilidade coletiva.</p>
+        <p>Reunião sem pauta, sem responsável e sem próximos passos é tempo desperdiçado. Toda reunião deve gerar documentação.</p>
+      </div>
+    </div>
+    <div class="anim d4" style="margin-top:clamp(30px,5.5vh,56px)">
+      <div class="eyebrow" style="margin-bottom:14px">Cada tarefa deve conter</div>
+      <div class="reqs">
+        <div class="req"><div class="num">01</div><h4>Contexto</h4><p>O que é e por que existe.</p></div>
+        <div class="req"><div class="num">02</div><h4>Responsáveis</h4><p>Quem executa, quem revisa, quem aprova.</p></div>
+        <div class="req"><div class="num">03</div><h4>Prazo</h4><p>Data clara, sem ambiguidade.</p></div>
+        <div class="req"><div class="num">04</div><h4>Status Atualizado</h4><p>Em andamento, bloqueado ou entregue.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S9 CLIENTES -->
+  <section class="slide" aria-label="Slide 9 de 12 — Clientes">
+    <div class="tag anim d1"><span class="dotmark"></span>S 009 · <b>Clientes</b></div>
+    <span class="idx anim d1">009 / 012</span>
+    <div class="clients-head">
+      <h2 class="anim d2">Quem já <span class="accent">confiou em nós</span></h2>
+      <p class="sub anim d3" style="margin-top:14px">Marcas que escolheram colaboração, criatividade e tecnologia para crescer.</p>
+    </div>
+    <!-- LOGOS: solte arquivos (de preferência SVG/PNG com fundo transparente) numa pasta "logos/"
+         ao lado do HTML, com os nomes em data-logo abaixo. O CSS deixa qualquer logo monocromático
+         (silhueta branca) automaticamente. Sem o arquivo, mostra o nome (não quebra). -->
+    <div class="client-grid anim d4">
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-10.png" alt="Heineken"><span class="client-name">Heineken</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-14.png" alt="Meta"><span class="client-name">Meta</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-6.png" alt="Coca-Cola"><span class="client-name">Coca-Cola</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-17.png" alt="Unilever"><span class="client-name">Unilever</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-16.png" alt="PicPay"><span class="client-name">PicPay</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-20.png" alt="Dell"><span class="client-name">Dell</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-5.png" alt="Boticário"><span class="client-name">Boticário</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-13.png" alt="Me Poupe"><span class="client-name">Me Poupe</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-8.png" alt="Gang"><span class="client-name">Gang</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-9.png" alt="Grendene"><span class="client-name">Grendene</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-1.png" alt="Agi"><span class="client-name">Agi</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-12.png" alt="FTD"><span class="client-name">FTD</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-23.png" alt="Getnet"><span class="client-name">Getnet</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-2.png" alt="Anima"><span class="client-name">Anima</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-11.png" alt="Mag"><span class="client-name">Mag</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-15.png" alt="Original"><span class="client-name">Original</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-19.png" alt="You.com"><span class="client-name">You.com</span></div>
+      <div class="client"><img class="client-logo" data-logo="logos/clientes_site_bonapartePrancheta-4.png" alt="Auxiliadora"><span class="client-name">Auxiliadora</span></div>
+    </div>
+  </section>
+
+  <!-- S10 IA COMO APOIO -->
+  <section class="slide" aria-label="Slide 10 de 12 — IA como apoio">
+    <div class="bgfig"><canvas class="shadergrad" data-cols="0.12,0.22,0.65|0.30,0.14,0.52|0.04,0.03,0.09"></canvas></div>
+    <div class="tag anim d1"><span class="dotmark"></span>S 010 · <b>Tecnologia e Ritmo</b></div>
+    <span class="idx anim d1">010 / 012</span>
+    <h2 class="anim d2">IA como <span class="accent">Apoio</span></h2>
+    <p class="lede anim d3" style="margin-top:18px;max-width:58ch">Usamos IA para acelerar tarefas, organizar informações, apoiar brainstorms e estruturar documentação.</p>
+    <div class="ai-two">
+      <div class="ai-note anim d4" style="margin-top:0">
+        <p>IA não substitui repertório, direção criativa nem contexto humano.<span class="hl">Tecnologia existe para potencializar pessoas.</span></p>
+      </div>
+      <div class="speed">
+        <h4 class="anim d4">Sobre Velocidade</h4>
+        <p class="anim d5">Trabalhamos em operação dinâmica. Prioridades mudam. Escopos evoluem. Flexibilidade não é exceção, é rotina.</p>
+        <div class="tension anim d6">
+          <div class="side"><span>Operação</span><h5>Velocidade<br>Necessária</h5></div>
+          <div class="mid">↔</div>
+          <div class="side"><span>Entrega</span><h5>Qualidade<br>Inegociável</h5></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S11 FUNDAÇÃO -->
+  <section class="slide" aria-label="Slide 11 de 12 — O que faz a Bona funcionar">
+    <div class="tag anim d1"><span class="dotmark"></span>S 011 · <b>Fundação</b></div>
+    <span class="idx anim d1">011 / 012</span>
+    <h2 class="anim d2">O que faz a <span class="accent">Bona</span> funcionar</h2>
+    <div class="cores">
+      <div class="core anim d3"><div class="lab">Core 01</div><h3>Confiança</h3><p>Entre pessoas, entre squads, entre áreas. A base de tudo.</p></div>
+      <div class="core anim d4"><div class="lab">Core 02</div><h3>Colaboração</h3><p>Não existe entrega individual numa operação coletiva.</p></div>
+      <div class="core anim d5"><div class="lab">Core 03</div><h3>Transparência</h3><p>Informação circula. Problema comunicado caminha para solução.</p></div>
+      <div class="core anim d6"><div class="lab">Core 04</div><h3>Documentação</h3><p>O que não está registrado não existe para o time.</p></div>
+      <div class="core anim d7"><div class="lab">Core 05</div><h3>Autonomia</h3><p>Liberdade para executar com responsabilidade.</p></div>
+    </div>
+  </section>
+
+  <!-- S12 CLOSING -->
+  <section class="slide closing" aria-label="Slide 12 de 12 — Bem-vindo, encerramento">
+    <div class="hero"><canvas class="shadergrad" data-cols="0.95,0.42,0.32|0.5,0.28,0.7|0.08,0.06,0.12"></canvas></div>
+    <div class="dotgrid"></div>
+    <span class="idx anim d1">012 / 012</span>
+    <h1 class="anim d1">Bem-vindo</h1>
+    <p class="intro anim d2">Você agora faz parte de uma estrutura construída para unir:</p>
+    <div class="unite">
+      <div class="u anim d3"><div class="ico">◆</div><h3>Criatividade</h3><p>A essência do que fazemos, transformando ideias em realidade visual e narrativa.</p></div>
+      <div class="u anim d4"><div class="ico">▲</div><h3>Estratégia</h3><p>O pensamento crítico que guia cada ação para atingir objetivos reais de negócio.</p></div>
+      <div class="u anim d5"><div class="ico">●</div><h3>Execução</h3><p>O rigor técnico e a agilidade necessários para entregar com excelência inegociável.</p></div>
+    </div>
+    <div class="close-foot anim d6">
+      <div class="ticker"><span>Vamos Cultivar Ideias&nbsp;·&nbsp;Collective Thinking Since 2011&nbsp;·&nbsp;Seek for Recognition&nbsp;·&nbsp;Innovation Agency&nbsp;·&nbsp;Bonaparte.ag&nbsp;·&nbsp;Vamos Cultivar Ideias&nbsp;·&nbsp;Collective Thinking Since 2011&nbsp;·&nbsp;Seek for Recognition&nbsp;·&nbsp;Innovation Agency&nbsp;·&nbsp;Bonaparte.ag&nbsp;·&nbsp;</span></div>
+      <div class="sig">BONAPARTE · 2026</div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="dots" id="dots" aria-label="Slides"></nav>
+<div class="counter"><span class="cur" id="cur">01</span><span>/ 12</span><span class="track"><i id="prog" style="width:8.3%"></i></span></div>
+<div class="arrows"><button id="prev" aria-label="Anterior">↑</button><button id="next" aria-label="Próximo">↓</button></div>
+<div class="hint" id="hint">↑ ↓ · Setas ou Scroll para navegar</div>
+
+<button class="menu-btn" id="menuBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="indexOverlay">
+  <span class="menu-ico" aria-hidden="true"><i></i><i></i><i></i></span>Índice
+</button>
+
+<div class="index-overlay" id="indexOverlay" role="dialog" aria-modal="true" aria-label="Índice de slides">
+  <div class="index-head">
+    <span class="index-title">Índice · Bonaparte Onboarding</span>
+    <button class="index-close" id="indexClose" aria-label="Fechar índice">Fechar ✕</button>
+  </div>
+  <nav class="index-list" id="indexList" aria-label="Navegação por slides"></nav>
+</div>
+
+<script>
+(function(){
+  // Resolve Unsplash placeholders → background-image (data-img holds the photo id)
+  var W=1400,Q=72;
+  document.querySelectorAll('[data-img]').forEach(function(el){
+    var id=el.getAttribute('data-img');
+    el.style.backgroundImage="url('https://images.unsplash.com/"+id+"?auto=format&fit=crop&w="+W+"&q="+Q+"')";
+  });
+  // client logos: mostra o logo se o arquivo existir; senão mantém o nome (fallback)
+  document.querySelectorAll('.client-logo[data-logo]').forEach(function(img){
+    img.addEventListener('load',function(){if(img.naturalWidth>0)img.closest('.client').classList.add('has-logo');});
+    img.src=img.getAttribute('data-logo');
+  });
+  // parede de logos rotativa — cicla todos os clientes pelas células (intercalando)
+  (function(){
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var cells=[].slice.call(document.querySelectorAll('.client'));
+    if(cells.length<2)return;
+    var pool=[
+      {f:'logos/clientes_site_bonapartePrancheta-7.png',n:'Converse'},
+      {f:'logos/clientes_site_bonapartePrancheta-3.png',n:'AZZAS 2154'},
+      {f:'logos/clientes_site_bonapartePrancheta-22.png',n:'Guarida'},
+      {f:'logos/clientes_site_bonapartePrancheta-21.png',n:'petite jolie'},
+      {f:'logos/clientes_site_bonapartePrancheta-24.png',n:'Fruki Bebidas'}
+    ];
+    pool.forEach(function(p){var i=new Image();i.src=p.f;}); // preload
+    setInterval(function(){
+      if(window.__menuOpen||!pool.length)return;
+      var cell=cells[Math.floor(Math.random()*cells.length)];
+      var img=cell.querySelector('.client-logo'), nm=cell.querySelector('.client-name');
+      var cur={f:img.getAttribute('data-logo'),n:nm.textContent};
+      var nxt=pool.shift();
+      img.style.opacity='0';
+      setTimeout(function(){
+        img.setAttribute('data-logo',nxt.f);img.src=nxt.f;img.alt=nxt.n;nm.textContent=nxt.n;
+        img.style.opacity='';
+      },720);
+      pool.push(cur);
+    },4200);
+  })();
+
+  var deck=document.getElementById('deck');
+  var slides=[].slice.call(deck.querySelectorAll('.slide'));
+  var dotsWrap=document.getElementById('dots');
+  var cur=document.getElementById('cur');
+  var prog=document.getElementById('prog');
+  var prev=document.getElementById('prev');
+  var next=document.getElementById('next');
+  var hint=document.getElementById('hint');
+  var idx=0;
+
+  slides.forEach(function(s,i){
+    var b=document.createElement('button');
+    b.setAttribute('aria-label','Slide '+(i+1));
+    b.addEventListener('click',function(){go(i);});
+    dotsWrap.appendChild(b);
+  });
+  var dots=[].slice.call(dotsWrap.children);
+
+  function setActive(i){
+    idx=i;
+    slides.forEach(function(s,n){s.classList.toggle('active',n===i);});
+    dots.forEach(function(d,n){d.classList.toggle('on',n===i);});
+    cur.textContent=String(i+1).padStart(2,'0');
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    prev.disabled=i===0;
+    next.disabled=i===slides.length-1;
+    // sync nav chrome theme to the active slide (works on dark AND light slides)
+    var cs=getComputedStyle(slides[i]);
+    ['--acc','--ink','--muted','--line','--bg','--bg-2'].forEach(function(v){
+      document.documentElement.style.setProperty(v+'-live', cs.getPropertyValue(v).trim());
+    });
+    if(window.__indexItems){window.__indexItems.forEach(function(it,n){it.classList.toggle('cur',n===i);});}
+    document.querySelectorAll('.bgvid').forEach(function(v){
+      if(slides[i].contains(v)){var p=v.play&&v.play();if(p&&p.catch)p.catch(function(){});}
+      else if(v.pause){try{v.pause();}catch(e){}}
+    });
+  }
+  function go(i){
+    i=Math.max(0,Math.min(slides.length-1,i));
+    setActive(i);
+    slides[i].scrollIntoView({behavior:'smooth'});
+  }
+
+  // scroll-driven active state (covers free wheel scrolling)
+  var ticking=false;
+  deck.addEventListener('scroll',function(){
+    if(ticking)return;ticking=true;
+    requestAnimationFrame(function(){
+      var i=Math.round(deck.scrollTop/deck.clientHeight);
+      i=Math.max(0,Math.min(slides.length-1,i));
+      if(i!==idx)setActive(i);
+      ticking=false;
+    });
+  },{passive:true});
+
+  window.addEventListener('keydown',function(e){
+    if(window.__menuOpen)return;
+    if(['ArrowDown','PageDown',' '].indexOf(e.key)>-1){e.preventDefault();go(idx+1);}
+    else if(['ArrowUp','PageUp'].indexOf(e.key)>-1){e.preventDefault();go(idx-1);}
+    else if(e.key==='Home'){e.preventDefault();go(0);}
+    else if(e.key==='End'){e.preventDefault();go(slides.length-1);}
+  });
+  prev.addEventListener('click',function(){go(idx-1);});
+  next.addEventListener('click',function(){go(idx+1);});
+
+  var hidden=false;
+  function hideHint(){if(!hidden){hidden=true;hint.classList.add('hide');}}
+  deck.addEventListener('scroll',hideHint,{passive:true});
+  window.addEventListener('keydown',hideHint);
+
+  // ---- menu / index ----
+  var titles=['Bonaparte','Bem-vindo','Como Funcionamos','Collective Thinking','Nossa Cultura','How We Work','Nossas Ferramentas','Organização Operacional','Clientes','IA como Apoio','O que faz a Bona funcionar','Encerramento'];
+  var indexList=document.getElementById('indexList');
+  var menuBtn=document.getElementById('menuBtn');
+  var overlay=document.getElementById('indexOverlay');
+  var indexClose=document.getElementById('indexClose');
+  window.__indexItems=titles.map(function(t,n){
+    var b=document.createElement('button');
+    b.className='index-item';
+    b.setAttribute('aria-label','Ir para slide '+(n+1)+' — '+t);
+    b.innerHTML='<span class="ii-num">'+String(n+1).padStart(2,'0')+'</span><span class="ii-title">'+t+'</span>';
+    b.addEventListener('click',function(){closeMenu();go(n);});
+    indexList.appendChild(b);
+    return b;
+  });
+  var lastFocus=null;
+  function openMenu(){lastFocus=document.activeElement;window.__menuOpen=true;overlay.classList.add('open');menuBtn.setAttribute('aria-expanded','true');indexClose.focus();}
+  function closeMenu(){window.__menuOpen=false;overlay.classList.remove('open');menuBtn.setAttribute('aria-expanded','false');if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+  menuBtn.addEventListener('click',function(){overlay.classList.contains('open')?closeMenu():openMenu();});
+  indexClose.addEventListener('click',closeMenu);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closeMenu();});
+  window.addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay.classList.contains('open')){e.preventDefault();closeMenu();}});
+
+  setActive(0);
+
+  // Safety: if rAF never advances (throttled/headless), reveal content so nothing stays hidden.
+  var alive=false;
+  requestAnimationFrame(function(){alive=true;});
+  setTimeout(function(){if(!alive)document.documentElement.classList.add('reveal-all');},700);
+})();
+</script>
+
+<script>
+/* SHADER GRADIENT — gradiente fluido WebGL (substitui os vídeos). Renderiza só o slide ativo. */
+(function(){
+  var canvases=[].slice.call(document.querySelectorAll('.shadergrad'));
+  if(!canvases.length)return;
+  var VERT='attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
+  var FRAG='precision highp float;\nuniform float t;uniform vec2 r;uniform vec3 a,b,c;\n'+
+  'vec3 permute(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}\n'+
+  'float snoise(vec2 v){const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);'+
+  'vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);'+
+  'vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);'+
+  'vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.0);'+
+  'vec3 pp=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));'+
+  'vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);m=m*m;m=m*m;'+
+  'vec3 x=2.0*fract(pp*C.www)-1.0;vec3 h=abs(x)-0.5;vec3 ox=floor(x+0.5);vec3 a0=x-ox;'+
+  'm*=1.79284291400159-0.85373472095314*(a0*a0+h*h);'+
+  'vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.0*dot(m,g);}\n'+
+  'void main(){vec2 uv=gl_FragCoord.xy/r;float tt=t*0.04;'+
+  'float n1=snoise(uv*1.4+vec2(tt,tt*0.6));'+
+  'float n2=snoise(uv*2.1-vec2(tt*0.7,tt*0.9)+5.0);'+
+  'vec3 col=mix(a,b,smoothstep(-0.7,0.7,n1));'+
+  'col=mix(col,c,smoothstep(-0.6,0.8,n2)*0.6);'+
+  'float vig=smoothstep(1.4,0.3,length(uv-0.5));col*=mix(0.88,1.0,vig);'+
+  'gl_FragColor=vec4(col,1.0);}';
+  function build(cv){
+    var cols=(cv.getAttribute('data-cols')||'').split('|').map(function(s){return s.split(',').map(Number);});
+    if(cols.length<3)return null;
+    var gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
+    if(!gl){cv.style.background='linear-gradient(135deg,rgb('+cols[0].map(function(x){return Math.round(x*255);})+'),rgb('+cols[1].map(function(x){return Math.round(x*255);})+') 50%,rgb('+cols[2].map(function(x){return Math.round(x*255);})+'))';return null;}
+    function sh(ty,src){var s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);return s;}
+    var pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VERT));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FRAG));gl.linkProgram(pr);
+    if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return null;
+    gl.useProgram(pr);
+    var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    var lp=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+    var uT=gl.getUniformLocation(pr,'t'),uR=gl.getUniformLocation(pr,'r');
+    gl.uniform3fv(gl.getUniformLocation(pr,'a'),cols[0]);gl.uniform3fv(gl.getUniformLocation(pr,'b'),cols[1]);gl.uniform3fv(gl.getUniformLocation(pr,'c'),cols[2]);
+    function size(){var dpr=Math.min(window.devicePixelRatio||1,1.5);var w=Math.max(2,(cv.clientWidth*dpr)|0),h=Math.max(2,(cv.clientHeight*dpr)|0);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}gl.viewport(0,0,cv.width,cv.height);gl.uniform2f(uR,cv.width,cv.height);}
+    return {slide:cv.closest('.slide'),render:function(tm){size();gl.uniform1f(uT,tm);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}};
+  }
+  var gs=canvases.map(build).filter(Boolean);
+  if(!gs.length)return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){gs.forEach(function(g){g.render(8.0);});return;}
+  var t0=null;
+  function loop(ts){if(t0===null)t0=ts;var tm=(ts-t0)/1000;for(var i=0;i<gs.length;i++){if(gs[i].slide&&gs[i].slide.classList.contains('active'))gs[i].render(tm);}requestAnimationFrame(loop);}
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
