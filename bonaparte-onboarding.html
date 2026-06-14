@@ -332,22 +332,41 @@ p{text-wrap:pretty}
   .menu-btn,.counter,.arrows button{background:rgba(40,40,40,.72)}
 }
 
-/* ---------- ANIMATIONS ---------- */
-.anim{opacity:0;transform:translateY(24px);filter:blur(2px)}
-.slide.active .anim{animation:fadeUp .82s var(--ease) forwards}
-@keyframes fadeUp{to{opacity:1;transform:translateY(0);filter:blur(0)}}
+/* ---------- ANIMATIONS — RevealVibe (clip-path + máscara + blur) ---------- */
+.anim{opacity:0;transform:translateY(20px);filter:blur(10px);clip-path:inset(0 0 100% 0)}
+.slide.active .anim{animation:fadeUp .95s var(--ease) forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);filter:blur(0);clip-path:inset(0 0 -10% 0)}}
 .slide.active .d1{animation-delay:.05s}.slide.active .d2{animation-delay:.14s}
 .slide.active .d3{animation-delay:.23s}.slide.active .d4{animation-delay:.32s}
 .slide.active .d5{animation-delay:.41s}.slide.active .d6{animation-delay:.5s}
 .slide.active .d7{animation-delay:.59s}.slide.active .d8{animation-delay:.68s}
+
+/* ---------- OVERDRIVE: TIPOGRAFIA CINÉTICA ---------- */
+/* h1 da capa/encerramento: revelação letra a letra por máscara (split via JS) */
+h1.kinetic{overflow:hidden}
+h1.kinetic .ltr{display:inline-block;transform:translateY(118%)}
+.slide.active h1.kinetic .ltr{animation:ltrUp .85s var(--ease) forwards;animation-delay:calc(.12s + var(--i)*.045s)}
+@keyframes ltrUp{to{transform:translateY(0)}}
+/* h2: rise-mask (o título sobe de dentro de um clip) no lugar do fade genérico */
+h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
+.slide.active h2.anim{animation:riseMask .9s var(--ease) forwards}
+@keyframes riseMask{to{opacity:1;clip-path:inset(-12% 0 -22% 0);transform:translateY(0)}}
+/* contador com dígito rolando + botão magnético */
+.counter .cur{display:inline-block}
+.menu-btn{transition:color .4s var(--ease),transform .3s var(--ease)}
+
 @media (prefers-reduced-motion:reduce){
-  .anim{opacity:1;transform:none;filter:none}
+  .anim{opacity:1;transform:none;filter:none;clip-path:none}
   .deck{scroll-behavior:auto}
   .close-foot .ticker span{animation:none}
   .slide.active .media.figure{animation:none;clip-path:none}
+  h1.kinetic .ltr{transform:none;animation:none}
+  h2.anim{opacity:1;clip-path:none;transform:none}
 }
-.reveal-all .anim{opacity:1!important;transform:none!important;filter:none!important;animation:none!important}
+.reveal-all .anim{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}
 .reveal-all .media.figure{animation:none!important;clip-path:none!important}
+.reveal-all h1.kinetic .ltr{transform:none!important;animation:none!important}
+.reveal-all h2.anim{opacity:1!important;clip-path:none!important;transform:none!important}
 
 /* ---------- LIGHT / COLORED SLIDE VARIANTS ---------- */
 .slide.s-light{--bg:#F4F1EA;--bg-2:#E9E5DD;--ink:#141414;--muted:rgba(20,20,20,.56);--line:rgba(20,20,20,.14);--acc:var(--ink);background:var(--bg);color:var(--ink)}
@@ -416,9 +435,60 @@ p{text-wrap:pretty}
   .tension{flex-direction:column}
   .dots{display:none}
 }
+
+/* ---------- LOADING (unicode spinner) ---------- */
+#loader{position:fixed;inset:0;z-index:200;background:#0B0B0B;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,3vh,30px);transition:opacity .8s var(--ease),visibility .8s}
+#loader::after{content:"";position:absolute;inset:-50%;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#loader.done{opacity:0;visibility:hidden}
+#loader .spin{position:relative;z-index:1;font-family:var(--sans);font-size:clamp(46px,9vw,92px);line-height:1;color:#F9F9F9;font-variant-numeric:tabular-nums}
+#loader .wm{position:relative;z-index:1;font-weight:500;font-size:clamp(13px,1.4vw,16px);letter-spacing:.5em;text-transform:uppercase;color:#F9F9F9;padding-left:.5em}
+#loader .lbl{position:relative;z-index:1;font-weight:500;font-size:.625rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(249,249,249,.42)}
+#loader .lbar{position:relative;z-index:1;width:min(220px,52vw);height:2px;background:rgba(249,249,249,.14);overflow:hidden}
+#loader .lbar i{display:block;height:100%;width:0;background:#F9F9F9;transition:width .45s var(--ease)}
+.preloading{overflow:hidden}
 </style>
 </head>
-<body>
+<body class="preloading">
+
+<div id="loader" role="status" aria-live="polite" aria-label="Carregando">
+  <div class="spin" aria-hidden="true">⠋</div>
+  <div class="wm">Bonaparte</div>
+  <div class="lbl">Collective Thinking</div>
+  <div class="lbar"><i id="lbarFill"></i></div>
+</div>
+
+<script>
+/* LOADING — unicode (braille) spinner; some o loader e re-dispara a entrada da capa */
+(function(){
+  var loader=document.getElementById('loader');
+  if(!loader)return;
+  var spin=loader.querySelector('.spin'), fill=document.getElementById('lbarFill');
+  var frames=['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+  var fi=0, t0=Date.now(), MIN=1100, done=false;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var iv=setInterval(function(){
+    fi=(fi+1)%frames.length;spin.textContent=frames[fi];
+    var p=Math.min(0.92,(Date.now()-t0)/MIN);if(fill)fill.style.width=(p*100)+'%';
+  }, reduce?160:80);
+  function finish(){
+    if(done)return;done=true;
+    clearInterval(iv);spin.textContent=frames[0];
+    if(fill)fill.style.width='100%';
+    document.body.classList.remove('preloading');
+    loader.classList.add('done');
+    try{document.dispatchEvent(new CustomEvent('bona:loaded'));}catch(e){}
+    var a=document.querySelector('.slide.active'); // re-arma a entrada da capa ao sair o loader
+    if(a&&!document.documentElement.classList.contains('reveal-all')){
+      a.classList.remove('active');void a.offsetWidth;a.classList.add('active');
+    }
+    setTimeout(function(){loader.style.display='none';},900);
+  }
+  function ready(){setTimeout(finish,Math.max(0,MIN-(Date.now()-t0)));}
+  if(document.readyState==='complete')ready();else window.addEventListener('load',ready);
+  setTimeout(finish,4000); // trava de segurança
+})();
+</script>
 
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none">
   <filter id="liquidLens" x="-30%" y="-30%" width="160%" height="160%">
@@ -432,13 +502,13 @@ p{text-wrap:pretty}
 
   <!-- S1 COVER -->
   <section class="slide cover active" aria-label="Slide 1 de 12 — Capa, Bonaparte">
-    <div class="hero"><canvas class="shadergrad" data-cols="0.96,0.43,0.32|0.10,0.15,0.50|0.28,0.22,0.54"></canvas></div>
+    <div class="hero"><canvas class="shadergrad" data-cols="0.973,0.263,0.102|0.106,0.153,0.200|0.647,0.510,0.796"></canvas></div>
     <div class="dotgrid"></div>
     <div class="topbar">
       <div class="kicker anim d1" style="margin:0">Onboarding</div>
       <span class="idx anim d1" style="position:static">001 / 012</span>
     </div>
-    <h1 class="anim d2">Bonaparte</h1>
+    <h1 class="kinetic">Bonaparte</h1>
     <div class="meta-row anim d4">
       <div>
         <div class="tagline" lang="en">Collective Thinking</div>
@@ -467,7 +537,7 @@ p{text-wrap:pretty}
         </div>
       </div>
       <div class="col anim d3">
-        <div class="media figure color" style="background-image:url('media/sil-welcome.jpg')"><span class="cap">Colaboração · Squads</span></div>
+        <div class="media figure color" style="background-image:url('media/ref-welcome.webp')"><span class="cap">Colaboração · Squads</span></div>
       </div>
     </div>
   </section>
@@ -502,7 +572,7 @@ p{text-wrap:pretty}
     <span class="idx anim d1">004 / 012</span>
     <div class="phil">
       <div class="left">
-        <div class="media figure color" style="background-image:url('media/sil-philo.jpg')"><span class="cap">Inteligência Coletiva</span></div>
+        <div class="media figure color" style="background-image:url('media/ref-collective.jpg')"><span class="cap">Inteligência Coletiva</span></div>
         <div class="flow anim d4"><span>Board</span><i>›</i><span>Community</span><i>›</i><span>Squads</span></div>
       </div>
       <div>
@@ -521,7 +591,7 @@ p{text-wrap:pretty}
 
   <!-- S5 NOSSA CULTURA -->
   <section class="slide" aria-label="Slide 5 de 12 — Nossa cultura">
-    <div class="bgfig"><canvas class="shadergrad" data-cols="0.45,0.78,0.55|0.18,0.42,0.5|0.06,0.09,0.1"></canvas></div>
+    <div class="bgfig"><canvas class="shadergrad" data-cols="0.400,0.565,0.651|0.106,0.153,0.200|0.973,0.263,0.102"></canvas></div>
     <div class="tag anim d1"><span class="dotmark"></span>S 005 · <b>Cultura e Postura</b></div>
     <span class="idx anim d1">005 / 012</span>
     <h2 class="anim d2">Nossa <span class="accent">Cultura</span></h2>
@@ -543,10 +613,10 @@ p{text-wrap:pretty}
     <span class="idx anim d1">006 / 012</span>
     <h2 class="anim d2" lang="en">How We <span class="accent">Work</span></h2>
     <div class="steps">
-      <div class="step anim d3"><div class="sid">S 001</div><div class="media figure" data-img="photo-1454165804606-c3d57bc86b40"></div><h3>Discovery</h3><p>Mergulhamos no desafio do cliente. Entendimento profundo antes de qualquer movimento.</p></div>
-      <div class="step anim d4"><div class="sid">S 002</div><div class="media figure" data-img="photo-1517245386807-bb43f82c33c4"></div><h3>Search</h3><p>Escaneamos o ecossistema em busca dos profissionais mais aptos. Técnica, cultura e sinergia.</p></div>
-      <div class="step anim d5"><div class="sid">S 003</div><div class="media figure" data-img="photo-1531746790731-6c087fecd65a"></div><h3>Connect</h3><p>Cultivamos a coesão do squad. Alinhamento de metodologia, propósito e contexto.</p></div>
-      <div class="step anim d6"><div class="sid">S 004</div><div class="media figure" data-img="photo-1551434678-e076c223a692"></div><h3>Delivery</h3><p>Squads em ação. Community acompanha de perto, maximizando desempenho e entrega contínua.</p></div>
+      <div class="step anim d3"><div class="sid">S 001</div><div class="media figure" style="background-image:url('media/ref-step1.jpg')"></div><h3>Discovery</h3><p>Mergulhamos no desafio do cliente. Entendimento profundo antes de qualquer movimento.</p></div>
+      <div class="step anim d4"><div class="sid">S 002</div><div class="media figure" style="background-image:url('media/ref-step2.jpg')"></div><h3>Search</h3><p>Escaneamos o ecossistema em busca dos profissionais mais aptos. Técnica, cultura e sinergia.</p></div>
+      <div class="step anim d5"><div class="sid">S 003</div><div class="media figure" style="background-image:url('media/ref-step3.webp')"></div><h3>Connect</h3><p>Cultivamos a coesão do squad. Alinhamento de metodologia, propósito e contexto.</p></div>
+      <div class="step anim d6"><div class="sid">S 004</div><div class="media figure" style="background-image:url('media/ref-step4.avif')"></div><h3>Delivery</h3><p>Squads em ação. Community acompanha de perto, maximizando desempenho e entrega contínua.</p></div>
     </div>
   </section>
 
@@ -630,7 +700,7 @@ p{text-wrap:pretty}
 
   <!-- S10 IA COMO APOIO -->
   <section class="slide" aria-label="Slide 10 de 12 — IA como apoio">
-    <div class="bgfig"><canvas class="shadergrad" data-cols="0.12,0.22,0.65|0.30,0.14,0.52|0.04,0.03,0.09"></canvas></div>
+    <div class="bgfig"><canvas class="shadergrad" data-cols="0.647,0.510,0.796|0.106,0.153,0.200|0.400,0.565,0.651"></canvas></div>
     <div class="tag anim d1"><span class="dotmark"></span>S 010 · <b>Tecnologia e Ritmo</b></div>
     <span class="idx anim d1">010 / 012</span>
     <h2 class="anim d2">IA como <span class="accent">Apoio</span></h2>
@@ -667,10 +737,10 @@ p{text-wrap:pretty}
 
   <!-- S12 CLOSING -->
   <section class="slide closing" aria-label="Slide 12 de 12 — Bem-vindo, encerramento">
-    <div class="hero"><canvas class="shadergrad" data-cols="0.95,0.42,0.32|0.5,0.28,0.7|0.08,0.06,0.12"></canvas></div>
+    <div class="hero"><canvas class="shadergrad" data-cols="0.973,0.263,0.102|0.141,0.051,0.024|0.973,0.478,0.361"></canvas></div>
     <div class="dotgrid"></div>
     <span class="idx anim d1">012 / 012</span>
-    <h1 class="anim d1">Bem-vindo</h1>
+    <h1 class="kinetic">Bem-vindo</h1>
     <p class="intro anim d2">Você agora faz parte de uma estrutura construída para unir:</p>
     <div class="unite">
       <div class="u anim d3"><div class="ico">◆</div><h3>Criatividade</h3><p>A essência do que fazemos, transformando ideias em realidade visual e narrativa.</p></div>
@@ -743,6 +813,21 @@ p{text-wrap:pretty}
     },4200);
   })();
 
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // tipografia cinética — h1 da capa/encerramento revela letra a letra
+  [].slice.call(document.querySelectorAll('h1.kinetic')).forEach(function(h){
+    var txt=h.textContent.trim();
+    h.setAttribute('aria-label',txt);h.textContent='';
+    for(var i=0;i<txt.length;i++){
+      var s=document.createElement('span');
+      s.className='ltr';s.setAttribute('aria-hidden','true');
+      s.style.setProperty('--i',i);
+      s.textContent=txt.charAt(i)===' '?'\u00A0':txt.charAt(i);
+      h.appendChild(s);
+    }
+  });
+
   var deck=document.getElementById('deck');
   var slides=[].slice.call(deck.querySelectorAll('.slide'));
   var dotsWrap=document.getElementById('dots');
@@ -751,7 +836,7 @@ p{text-wrap:pretty}
   var prev=document.getElementById('prev');
   var next=document.getElementById('next');
   var hint=document.getElementById('hint');
-  var idx=0;
+  var idx=0,idxPrev=0;
 
   slides.forEach(function(s,i){
     var b=document.createElement('button');
@@ -765,7 +850,13 @@ p{text-wrap:pretty}
     idx=i;
     slides.forEach(function(s,n){s.classList.toggle('active',n===i);});
     dots.forEach(function(d,n){d.classList.toggle('on',n===i);});
-    cur.textContent=String(i+1).padStart(2,'0');
+    var nt=String(i+1).padStart(2,'0');
+    if(cur.textContent!==nt){
+      var dir=i<idxPrev?-1:1; // rola pra cima ao avançar, pra baixo ao voltar
+      cur.textContent=nt; // texto definido sempre (à prova de rAF congelado); o roll é só enfeite
+      if(!reduce&&cur.animate){try{cur.animate([{transform:'translateY('+(dir*.55)+'em)',opacity:0},{transform:'translateY(0)',opacity:1}],{duration:380,easing:'cubic-bezier(.22,.61,.36,1)'});}catch(e){}}
+    }
+    idxPrev=i;
     prog.style.width=((i+1)/slides.length*100)+'%';
     prev.disabled=i===0;
     next.disabled=i===slides.length-1;
@@ -779,6 +870,8 @@ p{text-wrap:pretty}
       if(slides[i].contains(v)){var p=v.play&&v.play();if(p&&p.catch)p.catch(function(){});}
       else if(v.pause){try{v.pause();}catch(e){}}
     });
+    // dispara só depois de todo o estado mudar (pulso do shader + render do canvas ativo)
+    try{document.dispatchEvent(new CustomEvent('bona:slide',{detail:{slide:slides[i]}}));}catch(e){}
   }
   function go(i){
     i=Math.max(0,Math.min(slides.length-1,i));
@@ -836,6 +929,21 @@ p{text-wrap:pretty}
   overlay.addEventListener('click',function(e){if(e.target===overlay)closeMenu();});
   window.addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay.classList.contains('open')){e.preventDefault();closeMenu();}});
 
+  // botões magnéticos — atração sutil ao cursor (só ponteiro fino, sem reduced motion)
+  if(!reduce&&window.matchMedia&&window.matchMedia('(pointer: fine)').matches){
+    [].slice.call(document.querySelectorAll('.arrows button,.menu-btn')).forEach(function(b){
+      var reset=function(){b.style.transform='';};
+      b.addEventListener('pointermove',function(e){
+        if(b.disabled)return;
+        var r=b.getBoundingClientRect();
+        b.style.transform='translate('+((e.clientX-r.left-r.width/2)*.22)+'px,'+((e.clientY-r.top-r.height/2)*.22)+'px)';
+      });
+      b.addEventListener('pointerleave',reset);
+      b.addEventListener('pointercancel',reset);
+      b.addEventListener('blur',reset);   // teclado: Tab pra fora com o mouse parado ainda recentra
+    });
+  }
+
   setActive(0);
 
   // Safety: if rAF never advances (throttled/headless), reveal content so nothing stays hidden.
@@ -851,7 +959,7 @@ p{text-wrap:pretty}
   var canvases=[].slice.call(document.querySelectorAll('.shadergrad'));
   if(!canvases.length)return;
   var VERT='attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
-  var FRAG='precision highp float;\nuniform float t;uniform vec2 r;uniform vec3 a,b,c;\n'+
+  var FRAG='precision highp float;\nuniform float t;uniform vec2 r;uniform vec3 a,b,c;uniform vec2 mo;uniform float w;uniform float pu;\n'+
   'vec3 permute(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}\n'+
   'float snoise(vec2 v){const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);'+
   'vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);'+
@@ -863,11 +971,18 @@ p{text-wrap:pretty}
   'm*=1.79284291400159-0.85373472095314*(a0*a0+h*h);'+
   'vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.0*dot(m,g);}\n'+
   'void main(){vec2 uv=gl_FragCoord.xy/r;float tt=t*0.04;'+
+  'vec2 dm=uv-mo;dm.x*=r.x/r.y;float ds=length(dm);'+               // distância ao cursor (corrigida p/ aspecto)
+  'float inf=exp(-ds*ds*6.5)*(0.085+w*0.85+pu*0.22);'+              // influência: base + velocidade do mouse + pulso
+  'uv+=vec2(-dm.y,dm.x)*inf;uv-=dm*inf*0.55;'+                      // redemoinho + sucção do fluido
   'float n1=snoise(uv*1.4+vec2(tt,tt*0.6));'+
   'float n2=snoise(uv*2.1-vec2(tt*0.7,tt*0.9)+5.0);'+
   'vec3 col=mix(a,b,smoothstep(-0.7,0.7,n1));'+
   'col=mix(col,c,smoothstep(-0.6,0.8,n2)*0.6);'+
   'float vig=smoothstep(1.4,0.3,length(uv-0.5));col*=mix(0.88,1.0,vig);'+
+  'col*=1.0+pu*0.15;'+                                              // pulso de chegada ao slide
+  'float fr=mod(t,7.0);'+
+  'float gr=fract(sin(dot(gl_FragCoord.xy+vec2(fr*61.7,fr*38.3),vec2(12.9898,78.233)))*43758.5453);'+
+  'col+=(gr-0.5)*0.05;'+                                            // grain de filme animado
   'gl_FragColor=vec4(col,1.0);}';
   function build(cv){
     var cols=(cv.getAttribute('data-cols')||'').split('|').map(function(s){return s.split(',').map(Number);});
@@ -880,17 +995,41 @@ p{text-wrap:pretty}
     gl.useProgram(pr);
     var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
     var lp=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
-    var uT=gl.getUniformLocation(pr,'t'),uR=gl.getUniformLocation(pr,'r');
+    var uT=gl.getUniformLocation(pr,'t'),uR=gl.getUniformLocation(pr,'r'),
+        uM=gl.getUniformLocation(pr,'mo'),uW=gl.getUniformLocation(pr,'w'),uP=gl.getUniformLocation(pr,'pu');
     gl.uniform3fv(gl.getUniformLocation(pr,'a'),cols[0]);gl.uniform3fv(gl.getUniformLocation(pr,'b'),cols[1]);gl.uniform3fv(gl.getUniformLocation(pr,'c'),cols[2]);
     function size(){var dpr=Math.min(window.devicePixelRatio||1,1.5);var w=Math.max(2,(cv.clientWidth*dpr)|0),h=Math.max(2,(cv.clientHeight*dpr)|0);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}gl.viewport(0,0,cv.width,cv.height);gl.uniform2f(uR,cv.width,cv.height);}
-    return {slide:cv.closest('.slide'),render:function(tm){size();gl.uniform1f(uT,tm);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}};
+    // params nomeados px/py (não mx/my) p/ não colidir com as variáveis de mouse do escopo externo
+    return {slide:cv.closest('.slide'),render:function(tm,px,py,vel,pul){size();gl.uniform1f(uT,tm);gl.uniform2f(uM,px,py);gl.uniform1f(uW,vel);gl.uniform1f(uP,pul);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}};
   }
   var gs=canvases.map(build).filter(Boolean);
   if(!gs.length)return;
-  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){gs.forEach(function(g){g.render(8.0);});return;}
-  var t0=null;
-  function loop(ts){if(t0===null)t0=ts;var tm=(ts-t0)/1000;for(var i=0;i<gs.length;i++){if(gs[i].slide&&gs[i].slide.classList.contains('active'))gs[i].render(tm);}requestAnimationFrame(loop);}
-  requestAnimationFrame(loop);
+  var mq=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)');
+  // modo reduzido: renderiza um quadro estático do canvas ativo (com dimensões corretas) a cada troca de slide
+  function renderStatic(){var a=gs.filter(function(g){return g.slide&&g.slide.classList.contains('active');});a.forEach(function(g){g.render(8.0,0.5,0.5,0.0,0.0);});}
+  var rafId=null;
+  if(mq&&mq.matches){
+    renderStatic();
+    document.addEventListener('bona:slide',function(){requestAnimationFrame(renderStatic);}); // espera o layout do slide ativo
+  } else {
+    // cursor com inércia (sx,sy perseguem mx,my), velocidade suavizada e pulso que decai
+    var mx=.5,my=.5,sx=.5,sy=.5,vel=0,pu=1;
+    window.addEventListener('pointermove',function(e){mx=e.clientX/window.innerWidth;my=1-e.clientY/window.innerHeight;},{passive:true});
+    document.addEventListener('bona:slide',function(){pu=1;});
+    var t0=null;
+    var loop=function(ts){
+      if(t0===null)t0=ts;var tm=(ts-t0)/1000;
+      var dx=mx-sx,dy=my-sy;sx+=dx*0.055;sy+=dy*0.055;
+      var sp=Math.min(1,Math.sqrt(dx*dx+dy*dy)*2.2);vel+=(sp-vel)*0.06;
+      pu*=0.955;
+      for(var i=0;i<gs.length;i++){if(gs[i].slide&&gs[i].slide.classList.contains('active'))gs[i].render(tm,sx,sy,vel,pu);}
+      rafId=requestAnimationFrame(loop);
+    };
+    rafId=requestAnimationFrame(loop);
+    // se o usuário ativar "reduzir movimento" durante a sessão, para o loop e congela um quadro
+    var onMQ=function(){if(mq.matches){if(rafId)cancelAnimationFrame(rafId);rafId=null;renderStatic();}};
+    if(mq.addEventListener)mq.addEventListener('change',onMQ);else if(mq.addListener)mq.addListener(onMQ);
+  }
 })();
 </script>
 </body>
