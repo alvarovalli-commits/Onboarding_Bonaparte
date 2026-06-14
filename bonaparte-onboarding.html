@@ -7,15 +7,13 @@
 <meta name="theme-color" content="#0E0E0E">
 <title>Bonaparte · Onboarding</title>
 <!--
-  IMAGENS: placeholders minimalistas estilo Nothing (inspiração visual).
-  IMPORTANTE: Substituir pelas imagens próprias da Bonaparte após aprovação do design.
+  IMAGENS: fotos editoriais em media/ref-*.{jpg,webp,avif} (selecionadas da pasta Referências).
+  Para trocar: edite o background-image do .media.figure no slide correspondente
+  (S2 bem-vindo, S4 collective, S6 processo). Se o arquivo faltar, o bloco degrada
+  para um painel escuro limpo (não quebra o layout).
 
-  Como trocar:
-  1. Encontre os atributos data-img="photo-XXXXX" no HTML
-  2. Substitua "photo-XXXXX" pelo ID/URL da sua imagem
-  3. Ou use URLs diretas: data-img="https://...sua-imagem.jpg"
-
-  Se uma URL falhar, o bloco degrada para um painel escuro limpo (não quebra o layout).
+  FUNDO: shader WebGL de gradiente animado (mesh) nas color-slides (S1/S5/S10/S12),
+  cores via data-cols (RGB 0–1). Degrada para gradiente CSS sem WebGL.
 
   FONTE: Helvetica (nativa) — em Windows cai para Arial, equivalente da Helvetica.
 -->
@@ -369,7 +367,7 @@ h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
 .reveal-all h2.anim{opacity:1!important;clip-path:none!important;transform:none!important}
 
 /* ---------- LIGHT / COLORED SLIDE VARIANTS ---------- */
-.slide.s-light{--bg:#F4F1EA;--bg-2:#E9E5DD;--ink:#141414;--muted:rgba(20,20,20,.56);--line:rgba(20,20,20,.14);--acc:var(--ink);background:var(--bg);color:var(--ink)}
+.slide.s-light{--bg:#F4F1EA;--bg-2:#E9E5DD;--ink:#141414;--muted:rgba(20,20,20,.66);--line:rgba(20,20,20,.14);--acc:var(--ink);background:var(--bg);color:var(--ink)}
 .slide.s-coral{--bg:#F46E53;--bg-2:rgba(20,12,6,.08);--ink:#1A1208;--muted:rgba(26,18,8,.82);--line:rgba(26,18,8,.24);--acc:#1A1208;background:var(--bg);color:var(--ink)}
 .slide.s-lime{--bg:#E6FFA4;--bg-2:rgba(20,24,8,.07);--ink:#1A1F0A;--muted:rgba(26,31,10,.74);--line:rgba(26,31,10,.2);--acc:#1A1F0A;background:var(--bg);color:var(--ink)}
 
@@ -441,11 +439,7 @@ h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
 #loader::after{content:"";position:absolute;inset:-50%;pointer-events:none;opacity:.04;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 #loader.done{opacity:0;visibility:hidden}
-#loader .spin{position:relative;z-index:1;font-family:var(--sans);font-size:clamp(46px,9vw,92px);line-height:1;color:#F9F9F9;font-variant-numeric:tabular-nums}
-#loader .wm{position:relative;z-index:1;font-weight:500;font-size:clamp(13px,1.4vw,16px);letter-spacing:.5em;text-transform:uppercase;color:#F9F9F9;padding-left:.5em}
-#loader .lbl{position:relative;z-index:1;font-weight:500;font-size:.625rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(249,249,249,.42)}
-#loader .lbar{position:relative;z-index:1;width:min(220px,52vw);height:2px;background:rgba(249,249,249,.14);overflow:hidden}
-#loader .lbar i{display:block;height:100%;width:0;background:#F9F9F9;transition:width .45s var(--ease)}
+#loader .spin{position:relative;z-index:1;font-family:var(--sans);font-size:clamp(44px,8vw,84px);line-height:1;color:#F9F9F9;font-variant-numeric:tabular-nums}
 .preloading{overflow:hidden}
 </style>
 </head>
@@ -453,9 +447,6 @@ h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
 
 <div id="loader" role="status" aria-live="polite" aria-label="Carregando">
   <div class="spin" aria-hidden="true">⠋</div>
-  <div class="wm">Bonaparte</div>
-  <div class="lbl">Collective Thinking</div>
-  <div class="lbar"><i id="lbarFill"></i></div>
 </div>
 
 <script>
@@ -463,18 +454,14 @@ h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
 (function(){
   var loader=document.getElementById('loader');
   if(!loader)return;
-  var spin=loader.querySelector('.spin'), fill=document.getElementById('lbarFill');
+  var spin=loader.querySelector('.spin');
   var frames=['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
   var fi=0, t0=Date.now(), MIN=1100, done=false;
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var iv=setInterval(function(){
-    fi=(fi+1)%frames.length;spin.textContent=frames[fi];
-    var p=Math.min(0.92,(Date.now()-t0)/MIN);if(fill)fill.style.width=(p*100)+'%';
-  }, reduce?160:80);
+  var iv=setInterval(function(){fi=(fi+1)%frames.length;spin.textContent=frames[fi];}, reduce?160:80);
   function finish(){
     if(done)return;done=true;
     clearInterval(iv);spin.textContent=frames[0];
-    if(fill)fill.style.width='100%';
     document.body.classList.remove('preloading');
     loader.classList.add('done');
     try{document.dispatchEvent(new CustomEvent('bona:loaded'));}catch(e){}
@@ -774,12 +761,6 @@ h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
 
 <script>
 (function(){
-  // Resolve Unsplash placeholders → background-image (data-img holds the photo id)
-  var W=1400,Q=72;
-  document.querySelectorAll('[data-img]').forEach(function(el){
-    var id=el.getAttribute('data-img');
-    el.style.backgroundImage="url('https://images.unsplash.com/"+id+"?auto=format&fit=crop&w="+W+"&q="+Q+"')";
-  });
   // client logos: mostra o logo se o arquivo existir; senão mantém o nome (fallback)
   document.querySelectorAll('.client-logo[data-logo]').forEach(function(img){
     img.addEventListener('load',function(){if(img.naturalWidth>0)img.closest('.client').classList.add('has-logo');});
@@ -959,31 +940,7 @@ h2.anim{clip-path:inset(108% 0 -22% 0);filter:none;transform:translateY(.3em)}
   var canvases=[].slice.call(document.querySelectorAll('.shadergrad'));
   if(!canvases.length)return;
   var VERT='attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
-  var FRAG='precision highp float;\nuniform float t;uniform vec2 r;uniform vec3 a,b,c;uniform vec2 mo;uniform float w;uniform float pu;\n'+
-  'vec3 permute(vec3 x){return mod(((x*34.0)+1.0)*x,289.0);}\n'+
-  'float snoise(vec2 v){const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);'+
-  'vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);'+
-  'vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);'+
-  'vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.0);'+
-  'vec3 pp=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));'+
-  'vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);m=m*m;m=m*m;'+
-  'vec3 x=2.0*fract(pp*C.www)-1.0;vec3 h=abs(x)-0.5;vec3 ox=floor(x+0.5);vec3 a0=x-ox;'+
-  'm*=1.79284291400159-0.85373472095314*(a0*a0+h*h);'+
-  'vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.0*dot(m,g);}\n'+
-  'void main(){vec2 uv=gl_FragCoord.xy/r;float tt=t*0.04;'+
-  'vec2 dm=uv-mo;dm.x*=r.x/r.y;float ds=length(dm);'+               // distância ao cursor (corrigida p/ aspecto)
-  'float inf=exp(-ds*ds*6.5)*(0.085+w*0.85+pu*0.22);'+              // influência: base + velocidade do mouse + pulso
-  'uv+=vec2(-dm.y,dm.x)*inf;uv-=dm*inf*0.55;'+                      // redemoinho + sucção do fluido
-  'float n1=snoise(uv*1.4+vec2(tt,tt*0.6));'+
-  'float n2=snoise(uv*2.1-vec2(tt*0.7,tt*0.9)+5.0);'+
-  'vec3 col=mix(a,b,smoothstep(-0.7,0.7,n1));'+
-  'col=mix(col,c,smoothstep(-0.6,0.8,n2)*0.6);'+
-  'float vig=smoothstep(1.4,0.3,length(uv-0.5));col*=mix(0.88,1.0,vig);'+
-  'col*=1.0+pu*0.15;'+                                              // pulso de chegada ao slide
-  'float fr=mod(t,7.0);'+
-  'float gr=fract(sin(dot(gl_FragCoord.xy+vec2(fr*61.7,fr*38.3),vec2(12.9898,78.233)))*43758.5453);'+
-  'col+=(gr-0.5)*0.05;'+                                            // grain de filme animado
-  'gl_FragColor=vec4(col,1.0);}';
+  var FRAG='precision highp float;\nuniform float t;uniform vec2 r;uniform vec3 a,b,c;uniform vec2 mo;uniform float w;uniform float pu;\nfloat h21(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}\nvoid main(){float asp=r.x/r.y;vec2 p=gl_FragCoord.xy/r;p.x*=asp;float tt=t*0.06;vec2 mc=vec2(mo.x-0.5,mo.y-0.5);mc.x*=asp;p+=mc*(0.05+w*0.05);vec2 pa=vec2(0.30*asp+0.13*sin(tt*0.9),0.34+0.11*cos(tt*0.8));vec2 pb=vec2(0.74*asp+0.11*cos(tt*0.7+1.0),0.64+0.12*sin(tt*0.6+2.0));vec2 pc=vec2(0.52*asp+0.14*sin(tt*0.5+3.0),0.42+0.12*cos(tt*0.9+1.5));float wa=exp(-dot(p-pa,p-pa)*3.1);float wb=exp(-dot(p-pb,p-pb)*2.7);float wc=exp(-dot(p-pc,p-pc)*3.4);vec3 base=min(min(a,b),c)*0.32;vec3 col=base;col=mix(col,a,clamp(wa,0.0,1.0));col=mix(col,b,clamp(wb,0.0,1.0));col=mix(col,c,clamp(wc,0.0,1.0));vec2 uv=gl_FragCoord.xy/r;float vig=smoothstep(1.25,0.30,length(uv-0.5));col*=mix(0.80,1.0,vig);col*=1.0+pu*0.12;float fr=mod(t,10.0);float gr=h21(gl_FragCoord.xy+vec2(fr*53.0,fr*29.0));col+=(gr-0.5)*0.028;gl_FragColor=vec4(col,1.0);}';
   function build(cv){
     var cols=(cv.getAttribute('data-cols')||'').split('|').map(function(s){return s.split(',').map(Number);});
     if(cols.length<3)return null;
